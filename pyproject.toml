@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "new-product-development"
+version = "0.1.0"
+description = ""
+authors = ["YuA-hit <1122001m@g.hit-u.ac.jp>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+jupyter = "^1.0.0"
+ipykernel = "^6.29.3"
+pandas = "^2.2.1"
+openpyxl = "^3.1.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
