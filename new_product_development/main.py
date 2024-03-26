@@ -77,7 +77,10 @@ def next_generation_gene_create(ga, ga_elite, ga_progeny):
     # 現行世代個体集団の評価を低い順番にソートする
     next_generation_geno = sorted(ga, reverse=False, key=lambda u: u.evaluation)
     # 追加するエリート集団と子孫集団の合計ぶんを取り除く
-    for i in range(0, len(ga_elite) + len(ga_progeny)):
+    # `pop`する回数を計算する
+    pop_count = min(len(next_generation_geno), len(ga_elite) + len(ga_progeny))
+    # 実際に`pop`する
+    for i in range(pop_count):
         next_generation_geno.pop(0)
     # エリート集団と子孫集団を次世代集団を次世代へ追加する
     next_generation_geno.extend(ga_elite)
@@ -113,11 +116,11 @@ SELECT_GENOM = 10
 # 個体突然変異確率
 INDIVIDUAL_MUTATION = 0.1
 # 遺伝子突然変異確率
-GENOM_MUTATION = 0.1
+GENOM_MUTATION = 0.01
 # 繰り返す世代数
-MAX_GENERATION = 20
+MAX_GENERATION = 50
 # ファイルパス
-file_path = "./0322_list.xlsx"
+file_path = "0322_list.xlsx"
 
 # Excelファイルの読み込み
 df = pd.read_excel(file_path)
@@ -148,7 +151,6 @@ if __name__ == "__main__":
         progeny_gene = []
         for i in range(0, SELECT_GENOM):
             progeny_gene.extend(crossover(elite_genes[i - 1], elite_genes[i]))
-        current_group
         # 次世代個体集団を現行世代、エリート集団、子孫集団から作成する
         new_group = next_generation_gene_create(
             current_group, elite_genes, progeny_gene
