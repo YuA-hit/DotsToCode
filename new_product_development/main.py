@@ -97,7 +97,8 @@ def mutation(ga, individual_mutation, genom_mutation):
             for i_ in i.getGenom():
                 # 個体の遺伝子情報一つ一つに対して突然変異が起きる
                 if genom_mutation > (random.randint(0, 100) / 100):
-                    genom_list.append(random.randint(0, 1))
+                    genom_list.append(random.randint(0, max_values_array[i_]))
+
                 else:
                     genom_list.append(i_)
             i.setGenom(genom_list)
@@ -110,13 +111,13 @@ def mutation(ga, individual_mutation, genom_mutation):
 # 遺伝子情報の長さ
 GENOM_LENGTH = 21
 # 遺伝子集団の大きさ
-MAX_GENOM_LIST = 13
+MAX_GENOM_LIST = 36
 # 遺伝子選択数
 SELECT_GENOM = 10
 # 個体突然変異確率
 INDIVIDUAL_MUTATION = 0.1
 # 遺伝子突然変異確率
-GENOM_MUTATION = 0.01
+GENOM_MUTATION = 0.1
 # 繰り返す世代数
 MAX_GENERATION = 50
 # ファイルパス
@@ -124,12 +125,13 @@ file_path = "0322_list.xlsx"
 
 # Excelファイルの読み込み
 df = pd.read_excel(file_path)
-# 列を削除
-df = df.drop(df.columns[0], axis=1)
-# 行を削除
-df = df.drop(df.index[0], axis=0)
+# 列と行を削除
+df = df.drop(df.columns[0], axis=1).drop(df.index[0])
 # 文字を数字に変換
 df = convert_elements(df)
+# 各列の最大値を配列に格納して返す
+max_values_array = df.max(axis=1).tolist()
+max_values_array
 # 各列の最初の20行をリストとして抽出し、それらのリストを含むリストを生成
 sweets_lists = [df.iloc[:21, i].tolist() for i in range(df.shape[1])]
 
@@ -177,4 +179,21 @@ if __name__ == "__main__":
         current_group = new_group
 
     # 最終結果出力
-    print("最も優れた個体は{}".format(elite_genes[0].getGenom()))
+    processed_genomes = []
+    top_n = 15
+    sorted_group = sorted(current_group, key=lambda x: x.getEvaluation(), reverse=True)
+    print("ユニークなトップ15の個体:")
+    rank = 1
+    for individual in sorted_group:
+        if rank > top_n:
+            break
+        # 個体の遺伝子配列を取得
+        genome = individual.getGenom()
+        # 遺伝子配列が処理済みリストにない場合にのみ出力
+        if genome not in processed_genomes:
+            print(
+                f"  {rank}位: 遺伝子 = {genome}, 評価値 = {individual.getEvaluation()}"
+            )
+            # 処理済みリストに遺伝子配列を追加
+            processed_genomes.append(genome)
+            rank += 1
